@@ -19,7 +19,7 @@ Rather than fetching real data from Google Scholar, create mock profiles for pro
 Example Task: "Create a list of mock paper titles for each professor and display these when a professor is matched with a student."
 
 Basic Email Drafting:
-OpenAI API: https://community.openai.com/t/integrating-gpt-with-gmail-api-for-draft-emails/351952
+OpenAI API: https://community.openai.com/t/integrating-gpt-with-gmail-api-for-draft-emails/351952 or https://ai.plainenglish.io/why-to-write-long-emails-yourself-in-2023-an-automatic-email-writer-using-open-ai-api-in-python-b18e0dc406e
 Use string concatenation to create a simple email draft template.
 Example Task: "Write a Python function that generates an email draft to a professor using the student's name and the professor's name, filling these into a predefined template."
 
