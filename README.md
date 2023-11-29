@@ -14,6 +14,7 @@ Write a function to match student interests with professor interests using simpl
 Example Task: "Develop a Python function that takes student interests and matches them with the professors' interests in your dictionary, returning the names of matching professors."
 
 Mock Professor Profiles:
+Google Scholar API: https://stackoverflow.com/questions/62938110/does-google-scholar-have-an-api-available-that-we-can-use-in-our-research-applic
 Rather than fetching real data from Google Scholar, create mock profiles for professors with fictional papers.
 Example Task: "Create a list of mock paper titles for each professor and display these when a professor is matched with a student."
 
