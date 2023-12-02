@@ -1,106 +1,214 @@
-1. Collecting Student Data
-You'll prompt the user to enter their courses and interests, then store these in lists.
-  
-  def get_student_data():
-    courses = input("Enter the courses you took, separated by commas: ").split(',')
-    interests = input("Enter your interests, separated by commas: ").split(',')
-    return courses, interests
+class Student:
+    def __init__(self, name, degree, faculty, interests, graduation_year, prefers_empirical, thesis_timeline, current_semester):
+        self.name = name
+        self.degree = degree
+        self.faculty = faculty
+        self.interests = interests
+        self.graduation_year = graduation_year
+        self.prefers_empirical = prefers_empirical
+        self.thesis_timeline = thesis_timeline
+        self.current_semester = current_semester
 
-courses, interests = get_student_data()
+def get_student_data():
+    try:
+        student_name = input("Enter your name: ").strip()
+        degree = input("Enter your degree (e.g., Bachelor's in Economics): ").strip()
 
-  2. Fetching University Data (Web Scraping)
-For simplicity, let's assume you're scraping a webpage with a list of professors and their interests. You'll use Beautiful Soup for this.
-  
-  from bs4 import BeautifulSoup
-import requests
+        # List of faculties
+        faculties = [
+            "Economics",
+            "Finance",
+            "Management",
+            "Management and Organizations",
+            "Marketing",
+            "Operations, Technology and Innovation Management",
+            "Quantitative Methods, Analytics and Programming",
+            "Strategy and Entrepreneurship"
+        ]
 
-def fetch_university_data(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+        # Display faculties and ask for user's choice
+        print("Please select your faculty:")
+        for i, faculty in enumerate(faculties, start=1):
+            print(f"{i}. {faculty}")
+        faculty_choice = int(input("Enter the number corresponding to your faculty: "))
+        selected_faculty = faculties[faculty_choice - 1]
 
-    # Example scraping logic, assuming a certain HTML structure
-    professors = {}
-    for prof in soup.find_all('div', class_='professor'):
-        name = prof.find('h3').text
-        interests = [i.strip() for i in prof.find('p', class_='interests').text.split(',')]
-        professors[name] = interests
+        interests = input("Enter your interests, separated by commas: ").split(',')
+        graduation_year = int(input("Enter your expected graduation year: "))
+        current_semester = input("Enter your current semester (e.g., 'Fall 2023'): ").strip()
+        thesis_timeline = input("When do you plan to start writing your thesis? (e.g., 'Spring 2024'): ").strip()
+        prefers_empirical = input("Do you prefer an empirical thesis? (yes/no): ").lower() == 'yes'
+
+        return Student(student_name, degree, selected_faculty, interests, graduation_year, prefers_empirical, thesis_timeline, current_semester)
+
+    except KeyboardInterrupt:
+        print("\nUser cancelled input. Exiting function.")
+        return None
+
+def fetch_university_data():
+    # Hardcoded dictionary showing professors and their interests
+    professors = {
+        "Daniele d'Arienzo": ["Behavioral Finance", "Asset Pricing", "Asset Management"],
+        "Ekaterina Gavrilova": ["Empirical Corporate Finance", "Innovation Economics", "Firm Dynamics"],
+        "Emanuele Rizzo": ["Empirical Corporate Finance", "Financial Intermediation", "Corporate Governance"],
+        "Fernando Anjos": ["Theoretical Corporate Finance", "Diversified Firms", "Social and Economic Networks"],
+        "Francisco Queiró": ["Entrepreneurship", "Firm Dynamics", "Productivity"],
+        "Giorgio Ottonello": ["Empirical Asset Pricing", "Corporate Bond Markets", "Institutional Investors"],
+        "Irem Demirci": ["Corporate Finance", "Real Estate", "Household Finance"],
+        "João Amaro Matos": ["Incomplete Markets", "Derivatives & Risk Management", "Network Analysis"],
+        "João Pedro Pereira": ["Energy Finance", "Electricity Markets", "Renewable Energy"],
+        "Margarida Soares": ["Labor and Finance", "Gender", "Empirical Corporate Finance", "Innovation"],
+        "Melissa Prado": ["Institutional Investors", "Asset Management"],
+        "Miguel Ferreira": ["Empirical Corporate Finance", "Sustainable Finance", "Entrepreneurial Finance", "Household Finance"],
+        "Nicholas Hirschey": ["Microstructure", "Empirical Asset Pricing"],
+        "Pranav Desai": ["Innovation and Entrepreneurship", "Discrimination", "Gender", "Empirical Corporate Finance"],
+        "Rui Silva": ["Labor and Finance", "Empirical Corporate Finance", "Innovation and Entrepreneurship"],
+        "Virginia Gianinazzi": ["Household Finance", "Retail Investors", "Financial Intermediation"]
+        "Alex Armand": ["Development Economics", "Labor & Education", "Public & Political Economy"],
+        "Ana Balcão Reis": ["Labor & Education"],
+        "André Castro Silva": ["Macroeconomics"],
+        "Antonieta Cunha e Sá": ["Environmental Economics"],
+        "Cátia Batista": ["Development", "Public & Political Economy"],
+        "Francesco Franco": ["Macroeconomics"],
+        "Francisco Queiró": ["Labor & Education"],
+        "João Duarte": ["Macroeconomics"],
+        "José Ferreira Machado": ["Labor & Education"],
+        "José Tavares": ["Macroeconomics", "Public & Political Economy"],
+        "Judite Gonçalves": ["Health Economics"],
+        "Luís Catela Nunes": ["Labor & Education"],
+        "Nikita Melnikov": ["Development Economics", "Public & Political Economy"],
+        "Paulo Côrte-Real": ["Microeconomic Theory"],
+        "Pedro Brinca": ["Macroeconomics"],
+        "Pedro Pita Barros": ["Health Economics", "Industrial Organization"],
+        "Pedro Portugal": ["Labor & Education"],
+        "Pedro Vicente": ["Development Economics", "Public & Political Economy"],
+        "Steffen Hoernig": ["Industrial Organization"],
+        "Susana Peralta": ["Public & Political Economy"],
+        "Vasco Santos": ["Industrial Organization"],
+        "Wayne Sandholtz": ["Development Economics", "Public & Political Economy"],
+        "Daniele d'Arienzo": ["Behavioral Finance", "Asset Pricing", "Asset Management"],
+        "Ekaterina Gavrilova": ["Empirical Corporate Finance", "Innovation Economics", "Firm Dynamics"],
+        "Emanuele Rizzo": ["Empirical Corporate Finance", "Financial Intermediation", "Corporate Governance"],
+        "Fernando Anjos": ["Theoretical Corporate Finance", "Diversified Firms", "Social and Economic Networks"],
+}
+
+    }
     return professors
-
-# Example URL (you'll need to replace this with the actual one)
-professors = fetch_university_data('http://example.com/university/professors')
-
-  3. Matching Algorithm
-Match student's interests with professors' interests.
 
 def match_professors(student_interests, professors):
     matches = {}
     for name, interests in professors.items():
-        if any(interest in student_interests for interest in interests):
+        if any(interest.strip().lower() in student_interests for interest in interests):
             matches[name] = interests
     return matches
 
-matched_professors = match_professors(interests, professors)
+def get_scholar_profile_link(professor_name):
+    search_query = professor_name.replace(' ', '+') + "+Nova+School+of+Business+and+Economics"
+    base_url = "https://scholar.google.com/scholar?q="
+    return base_url + search_query
 
-  4. Retrieving Professor Profiles from Google Scholar (Simplified)
-Here, you'll use a static mock-up for simplicity.
+def get_previous_thesis(professor_name):
+    search_query = professor_name.replace(' ', '+')
+    base_url = 'https://run.unl.pt/browse?type=advisor&order=ASC&rpp=20&starts_with='
+    return base_url + search_query
 
-  professor_profiles = {
-    "Dr. Smith": ["Paper 1 Title", "Paper 2 Title"],
-    # ... other mock profiles
-}
+def display_matched_professors(matches):
+    if not matches:
+        print("No matching professors found based on your interests.")
+    else:
+        print("Matched Professors:")
+        for name, interests in matches.items():
+            print(f"{name}: {', '.join(interests)}")
+            print(f"Google Scholar Profile: {get_scholar_profile_link(name)}\n")
 
-def get_professor_papers(professor_name):
-    return professor_profiles.get(professor_name, [])
-
-  5. Drafting an Email using OpenAI API
-Use OpenAI's GPT model to generate email drafts. You'll need an API key from OpenAI for this.
-
-  import openai
-
-def draft_email(student_name, professor_name):
-    openai.api_key = 'your-api-key'
-
-    prompt = f"Draft an email from a student, {student_name}, to a professor, {professor_name}, asking about thesis opportunities in their field of interest."
-
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=150
+def draft_email(student, professor, professor_expertise, courses_with_professor, thesis_ideas):
+    # Short email version
+    short_email_subject = f"Meeting Request for Thesis Supervision in {', '.join(professor_expertise)}"
+    short_email_body = (
+        f"Dear Professor {professor.split(' ')[-1]},\n\n"
+        f"I am {student.name}, a {student.degree} student in {student.faculty}, graduating in {student.graduation_year}. "
+        f"I am interested in {', '.join(student.interests)} and am planning to start my thesis in {student.thesis_timeline}. "
+        f"I would appreciate the opportunity to discuss potential supervision and your availability for a meeting.\n\n"
+        f"Thank you for considering my request.\n\n"
+        f"Sincerely,\n{student.name}"
     )
 
-    return response.choices[0].text.strip()
+    # Long email version
+    long_email_subject = f"Inquiry about Thesis Supervision in {', '.join(professor_expertise)}"
+    long_email_body = (
+        f"Dear Professor {professor.split(' ')[-1]},\n\n"
+        f"My name is {student.name}, currently a {student.current_semester} student pursuing a {student.degree} in {student.faculty}. "
+        f"I am a {student.graduation_year} graduate student, planning to graduate in {student.graduation_year}. "
+        f"I am planning to commence my thesis in {student.thesis_timeline} and am interested in exploring topics like {', '.join(thesis_ideas)}. "
+        f"My preference is for an empirical thesis, aligning with my academic background and your expertise.\n\n"
+    )
 
-email_draft = draft_email("Student Name", "Professor Name")
-print(email_draft)
+    # Add courses_with_professor section if courses were provided
+    if courses_with_professor:
+        long_email_body += (
+            f"I have taken courses such as {', '.join(courses_with_professor)} under your guidance.\n\n"        
+    )
 
+    long_email_body += (
+        f"I would be grateful for the opportunity to discuss these topics and your availability for thesis supervision. "
+        f"Could we possibly schedule a meeting to discuss this further?\n\n"
+        f"Thank you for your time and consideration. I look forward to the possibility of working under your guidance.\n\n"
+        f"Sincerely,\n{student.name}"
+    )
 
-6. Providing Multiple Professor Options
-Present matched professors and let the student choose.
+    return (short_email_subject, short_email_body), (long_email_subject, long_email_body)
 
-def choose_professor(matches):
-    print("Matched Professors:")
-    for i, (name, interests) in enumerate(matches.items(), 1):
-        print(f"{i}. {name} - Interests: {', '.join(interests)}")
-    choice = int(input("Choose a professor by number: "))
-    return list(matches.keys())[choice - 1]
+def main():
+    department_info = ("Economics", "Nova SBE")  # Tuple example
+    student = None
+    professors = fetch_university_data()
+    matched_professors = {}
 
-chosen_professor = choose_professor(matched_professors)
+    try:
+        while True:
+            print("\nMenu:")
+            print("1. Enter Student Data")
+            print("2. Find Matching Professors")
+            print("3. Write Email to Matched Professor")
+            print("4. Exit")
+            choice = input("Choose an option: ")
 
+            if choice == '1':
+                student = get_student_data()
+                if student is None:
+                    print("No student data entered. Returning to main menu.")
+                    continue
 
-  7. User Interface and Integration
-Combine all the parts in a main function.
+            elif choice == '2' and student:
+                matched_professors = match_professors([interest.lower() for interest in student.interests], professors)
+                display_matched_professors(matched_professors)
 
-  def main():
-    courses, student_interests = get_student_data()
-    professors = fetch_university_data('http://example.com/university/professors')
-    matched_professors = match_professors(student_interests, professors)
-    chosen_professor = choose_professor(matched_professors)
-    papers = get_professor_papers(chosen_professor)
-    print(f"Papers by {chosen_professor}: {', '.join(papers)}")
-    email = draft_email("Your Name", chosen_professor)
-    print("Draft Email:\n", email)
+            elif choice == '3' and student and matched_professors:
+                print("\nSelect a Professor to Write an Email:")
+                for idx, professor in enumerate(matched_professors.keys(), 1):
+                    print(f"{idx}. {professor}")
+                prof_choice = int(input("Enter the number of the professor: ")) - 1
+                selected_professor = list(matched_professors.keys())[prof_choice]
+                professor_expertise = matched_professors[selected_professor]
+
+                courses_with_professor = input("Enter any courses you took with the professor, separated by commas: ").split(',')
+                thesis_ideas = input("Enter 2-3 thesis topic ideas, separated by commas: ").split(',')
+
+                short_email, long_email = draft_email(student, selected_professor, professor_expertise, courses_with_professor, thesis_ideas)
+                print("\nShort Email Version:\nSubject: ", short_email[0])
+                print(short_email[1])
+
+                print("\nLong Email Version:\nSubject: ", long_email[0])
+                print(long_email[1])
+
+            elif choice == '4':
+                print("Exiting program.")
+                break
+            else:
+                print("Invalid choice. Please try again.")
+
+    except KeyboardInterrupt:
+        print("\nProgram interrupted by user. Exiting.")
 
 if __name__ == "__main__":
     main()
-
-
