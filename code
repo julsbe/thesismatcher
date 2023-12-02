@@ -63,7 +63,7 @@ def fetch_university_data():
         "Nicholas Hirschey": ["Microstructure", "Empirical Asset Pricing"],
         "Pranav Desai": ["Innovation and Entrepreneurship", "Discrimination", "Gender", "Empirical Corporate Finance"],
         "Rui Silva": ["Labor and Finance", "Empirical Corporate Finance", "Innovation and Entrepreneurship"],
-        "Virginia Gianinazzi": ["Household Finance", "Retail Investors", "Financial Intermediation"]
+        "Virginia Gianinazzi": ["Household Finance", "Retail Investors", "Financial Intermediation"],
         "Alex Armand": ["Development Economics", "Labor & Education", "Public & Political Economy"],
         "Ana Balcão Reis": ["Labor & Education"],
         "André Castro Silva": ["Macroeconomics"],
@@ -90,8 +90,6 @@ def fetch_university_data():
         "Ekaterina Gavrilova": ["Empirical Corporate Finance", "Innovation Economics", "Firm Dynamics"],
         "Emanuele Rizzo": ["Empirical Corporate Finance", "Financial Intermediation", "Corporate Governance"],
         "Fernando Anjos": ["Theoretical Corporate Finance", "Diversified Firms", "Social and Economic Networks"],
-}
-
     }
     return professors
 
