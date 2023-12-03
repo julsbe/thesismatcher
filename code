@@ -1,3 +1,6 @@
+import pandas as pd
+import gdown
+
 class Student:
     def __init__(self, name, degree, faculty, interests, graduation_year, prefers_empirical, thesis_timeline, current_semester):
         self.name = name
@@ -14,7 +17,7 @@ def get_student_data():
         student_name = input("Enter your name: ").strip()
         degree = input("Enter your degree (e.g., Bachelor's in Economics): ").strip()
 
-        # List of faculties
+        #List of faculties
         faculties = [
             "Economics",
             "Finance",
@@ -46,57 +49,29 @@ def get_student_data():
         return None
 
 def fetch_university_data():
-    # Hardcoded dictionary showing professors and their interests
-    professors = {
-        "Daniele d'Arienzo": ["Behavioral Finance", "Asset Pricing", "Asset Management"],
-        "Ekaterina Gavrilova": ["Empirical Corporate Finance", "Innovation Economics", "Firm Dynamics"],
-        "Emanuele Rizzo": ["Empirical Corporate Finance", "Financial Intermediation", "Corporate Governance"],
-        "Fernando Anjos": ["Theoretical Corporate Finance", "Diversified Firms", "Social and Economic Networks"],
-        "Francisco Queiró": ["Entrepreneurship", "Firm Dynamics", "Productivity"],
-        "Giorgio Ottonello": ["Empirical Asset Pricing", "Corporate Bond Markets", "Institutional Investors"],
-        "Irem Demirci": ["Corporate Finance", "Real Estate", "Household Finance"],
-        "João Amaro Matos": ["Incomplete Markets", "Derivatives & Risk Management", "Network Analysis"],
-        "João Pedro Pereira": ["Energy Finance", "Electricity Markets", "Renewable Energy"],
-        "Margarida Soares": ["Labor and Finance", "Gender", "Empirical Corporate Finance", "Innovation"],
-        "Melissa Prado": ["Institutional Investors", "Asset Management"],
-        "Miguel Ferreira": ["Empirical Corporate Finance", "Sustainable Finance", "Entrepreneurial Finance", "Household Finance"],
-        "Nicholas Hirschey": ["Microstructure", "Empirical Asset Pricing"],
-        "Pranav Desai": ["Innovation and Entrepreneurship", "Discrimination", "Gender", "Empirical Corporate Finance"],
-        "Rui Silva": ["Labor and Finance", "Empirical Corporate Finance", "Innovation and Entrepreneurship"],
-        "Virginia Gianinazzi": ["Household Finance", "Retail Investors", "Financial Intermediation"],
-        "Alex Armand": ["Development Economics", "Labor & Education", "Public & Political Economy"],
-        "Ana Balcão Reis": ["Labor & Education"],
-        "André Castro Silva": ["Macroeconomics"],
-        "Antonieta Cunha e Sá": ["Environmental Economics"],
-        "Cátia Batista": ["Development", "Public & Political Economy"],
-        "Francesco Franco": ["Macroeconomics"],
-        "Francisco Queiró": ["Labor & Education"],
-        "João Duarte": ["Macroeconomics"],
-        "José Ferreira Machado": ["Labor & Education"],
-        "José Tavares": ["Macroeconomics", "Public & Political Economy"],
-        "Judite Gonçalves": ["Health Economics"],
-        "Luís Catela Nunes": ["Labor & Education"],
-        "Nikita Melnikov": ["Development Economics", "Public & Political Economy"],
-        "Paulo Côrte-Real": ["Microeconomic Theory"],
-        "Pedro Brinca": ["Macroeconomics"],
-        "Pedro Pita Barros": ["Health Economics", "Industrial Organization"],
-        "Pedro Portugal": ["Labor & Education"],
-        "Pedro Vicente": ["Development Economics", "Public & Political Economy"],
-        "Steffen Hoernig": ["Industrial Organization"],
-        "Susana Peralta": ["Public & Political Economy"],
-        "Vasco Santos": ["Industrial Organization"],
-        "Wayne Sandholtz": ["Development Economics", "Public & Political Economy"],
-        "Daniele d'Arienzo": ["Behavioral Finance", "Asset Pricing", "Asset Management"],
-        "Ekaterina Gavrilova": ["Empirical Corporate Finance", "Innovation Economics", "Firm Dynamics"],
-        "Emanuele Rizzo": ["Empirical Corporate Finance", "Financial Intermediation", "Corporate Governance"],
-        "Fernando Anjos": ["Theoretical Corporate Finance", "Diversified Firms", "Social and Economic Networks"],
-    }
+    # Pandas Data Frame to include Professors
+    !pip install gdown
+    !pip install xlrd
+    import gdown
+    import pandas as pd
+
+    file_id = '1Fzo3ME-XQTPIYGdGoVCcJaaIL684bYXS'
+    url = f'https://drive.google.com/uc?id={file_id}'
+
+    output = 'Professor_Database.xlsx'
+
+    gdown.download(url, output, quiet=False)
+
+    # Read Excel file into a DataFrame
+    professors = pd.read_excel('Professor_Database.xlsx')
     return professors
 
-def match_professors(student_interests, professors):
+def match_professors(student_interests, professors_df):
     matches = {}
-    for name, interests in professors.items():
-        if any(interest.strip().lower() in student_interests for interest in interests):
+    for index, row in professors_df.iterrows():
+        name = row['Name']
+        interests = row['Interest']
+        if any(interest.strip().lower() in student_interests for interest in interests.split(',')):
             matches[name] = interests
     return matches
 
@@ -105,10 +80,6 @@ def get_scholar_profile_link(professor_name):
     base_url = "https://scholar.google.com/scholar?q="
     return base_url + search_query
 
-def get_previous_thesis(professor_name):
-    search_query = professor_name.replace(' ', '+')
-    base_url = 'https://run.unl.pt/browse?type=advisor&order=ASC&rpp=20&starts_with='
-    return base_url + search_query
 
 def display_matched_professors(matches):
     if not matches:
@@ -136,27 +107,39 @@ def draft_email(student, professor, professor_expertise, courses_with_professor,
     long_email_body = (
         f"Dear Professor {professor.split(' ')[-1]},\n\n"
         f"My name is {student.name}, currently a {student.current_semester} student pursuing a {student.degree} in {student.faculty}. "
-        f"I am a {student.graduation_year} graduate student, planning to graduate in {student.graduation_year}. "
-        f"I am planning to commence my thesis in {student.thesis_timeline} and am interested in exploring topics like {', '.join(thesis_ideas)}. "
-        f"My preference is for an empirical thesis, aligning with my academic background and your expertise.\n\n"
+        f"I am planning to graduate in {student.graduation_year} and to commence my thesis in {student.thesis_timeline}. "
     )
 
-    # Add courses_with_professor section if courses were provided
+    # Add courses_with_professor section if provided
     if courses_with_professor:
-        long_email_body += (
-            f"I have taken courses such as {', '.join(courses_with_professor)} under your guidance.\n\n"        
-    )
+        long_email_body += f"I have taken courses such as {', '.join(courses_with_professor)} under your guidance.\n\n"
+
+    # Add thesis_ideas section if provided
+    if thesis_ideas:
+        long_email_body += f"I am interested in exploring thesis topics like {', '.join(thesis_ideas)}.\n\n"
+
+    # If neither courses nor thesis ideas are provided, mention empirical preference
+    if not courses_with_professor and not thesis_ideas:
+        if student.prefers_empirical:
+            long_email_body += "My preference is for an empirical thesis, aligning with my academic background and your expertise.\n\n"
 
     long_email_body += (
-        f"I would be grateful for the opportunity to discuss these topics and your availability for thesis supervision. "
-        f"Could we possibly schedule a meeting to discuss this further?\n\n"
-        f"Thank you for your time and consideration. I look forward to the possibility of working under your guidance.\n\n"
+        "I would be grateful for the opportunity to discuss these topics and your availability for thesis supervision. "
+        "Could we possibly schedule a meeting to discuss this further?\n\n"
+        "Thank you for your time and consideration. I look forward to the possibility of working under your guidance.\n\n"
         f"Sincerely,\n{student.name}"
     )
 
     return (short_email_subject, short_email_body), (long_email_subject, long_email_body)
 
+
 def main():
+    print("## Student-Professor Matching and Email Assistant\n"
+          "This tool matches students with professors based on academic interests "
+          "and assists in drafting emails for thesis supervision inquiries. "
+          "Start by entering basic student data, find matching professors, "
+          "and then draft personalized emails to potential supervisors.\n")
+
     department_info = ("Economics", "Nova SBE")  # Tuple example
     student = None
     professors = fetch_university_data()
@@ -191,6 +174,7 @@ def main():
 
                 courses_with_professor = input("Enter any courses you took with the professor, separated by commas: ").split(',')
                 thesis_ideas = input("Enter 2-3 thesis topic ideas, separated by commas: ").split(',')
+                student_email = input("Please enter your email adress to receive our famous thesis matcher report")
 
                 short_email, long_email = draft_email(student, selected_professor, professor_expertise, courses_with_professor, thesis_ideas)
                 print("\nShort Email Version:\nSubject: ", short_email[0])
